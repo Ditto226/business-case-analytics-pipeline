@@ -13,14 +13,14 @@ The file includes safely masked, pre-loaded mock data so you can view the layout
 🔌 Connecting to Your Own SharePoint Directory
 If you want to run a live data refresh locally, you can easily point the model to your own environment:
 
-Upload the files from the /data folder in this repository to your SharePoint directory. Ensure your directory mirrors this folder structure:
+1. Upload the files from the /data folder in this repository to your SharePoint directory. Ensure your directory mirrors this folder structure:
 
-    ├── 📁 DATA/
-    │   └── Mock_Data.xlsx
-    └── 📁 MAPPING/
-        ├── PARENT_UNIT.xlsx
-        └── HOLIDAY.xlsx
-        └── PRODUCT.xlsx
+        ├── 📁 DATA/
+        │   └── Mock_Data.xlsx
+        └── 📁 MAPPING/
+            ├── PARENT_UNIT.xlsx
+            └── HOLIDAY.xlsx
+            └── PRODUCT.xlsx
 
     
 2. In Power BI Desktop, click **Transform Data** to open the Power Query Editor.
