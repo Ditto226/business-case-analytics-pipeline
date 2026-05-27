@@ -8,7 +8,7 @@ To explore the architecture, download and open Telecom_Demo.pbix in Power BI Des
 👁️ For Visuals & Dashboard Design
 The file includes safely masked, pre-loaded mock data so you can view the layouts and interact with filters immediately.
 
-⚠️ Important: Do not click the Refresh button upon opening the file, as the source paths point have not not setup yet.
+⚠️ Important: Do not click the Refresh button upon opening the file, as the source paths point have not been setup yet.
 
 🔌 Connecting to Your Own SharePoint Directory
 If you want to run a live data refresh locally, you can easily point the model to your own environment:
