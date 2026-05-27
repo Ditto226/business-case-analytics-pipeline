@@ -15,12 +15,17 @@ If you want to run a live data refresh locally, you can easily point the model t
 
 Upload the files from the /data folder in this repository to your SharePoint directory. Ensure your directory mirrors this folder structure:
 
-📁 DATA/
-└── Mock_Data.csv
-📁 MAPPING/
-├── PARENT_UNIT.csv
-├── HOLIDAY.csv
-└── PRODUCT.csv
+└──📁 DATA/
+|
+|    └── Mock_Data.csv
+|
+└── 📁 MAPPING/
+    
+     ├── PARENT_UNIT.csv
+    
+     ├── HOLIDAY.csv
+    
+     └── PRODUCT.csv
     
 2. In Power BI Desktop, click **Transform Data** to open the Power Query Editor.
 3. Locate the **Source** query/parameter step and update the URL path string to match your SharePoint directory link.
