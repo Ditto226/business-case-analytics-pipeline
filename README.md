@@ -1,9 +1,26 @@
 # 📊 Telecom Case Management ETL & Dashboard
 
-A comprehensive end-to-end Business Intelligence project demonstrating data engineering, ETL pipelines, and interactive analytics using Malaysian telecom case data.
+A comprehensive end-to-end Business Intelligence project demonstrating data engineering, robust ETL pipelines, and interactive analytics using masked Malaysian telecom operational data.
 
-## 🛠️ How to Inspect This Project
+🛠️ How to Inspect This Project
+To explore the architecture, download and open Telecom_Demo.pbix in Power BI Desktop.
 
-Download and open `Telecom_Demo.pbix` in Power BI Desktop. 
-* **For Visuals:** The file includes safely masked, pre-loaded mock data so you can view the dashboard and interact with filters immediately.
-* **For ETL Queries:** Click **Transform Data** to inspect the Power Query M-code, data cleansing logic, and holiday/parent unit mapping merges.
+👁️ For Visuals & Dashboard Design
+The file includes safely masked, pre-loaded mock data so you can view the layouts and interact with filters immediately.
+
+⚠️ Important: Do not click the Refresh button upon opening the file, as the source paths point have not not setup yet.
+
+🔌 Connecting to Your Own SharePoint Directory
+If you want to run a live data refresh locally, you can easily point the model to your own environment:
+
+Upload the files from the /data folder in this repository to your SharePoint directory. Ensure your directory mirrors this folder structure:
+
+├── 📁 DATA/
+│   └── Mock_Data.csv
+└── 📁 MAPPING/
+    ├── PARENT_UNIT.csv
+    ├── HOLIDAY.csv
+    └── PRODUCT.csv
+    
+2. In Power BI Desktop, click **Transform Data** to open the Power Query Editor.
+3. Locate the **Source** query/parameter step and update the URL path string to match your SharePoint directory link.
