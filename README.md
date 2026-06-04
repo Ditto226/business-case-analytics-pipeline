@@ -1,6 +1,6 @@
 # 📊 Telecom Case Management ETL & Dashboard
 
-A comprehensive end-to-end Business Intelligence project demonstrating data engineering, robust ETL pipelines, and interactive analytics using masked Malaysian telecom operational data.
+A comprehensive end-to-end Business Intelligence project demonstrating data engineering, robust ETL pipelines, and interactive analytics using masked Malaysian telecom operational data. The file use safely masked, pre-loaded mock data.
 
 👁️ Dashboard Preview & Demo
 
@@ -18,7 +18,7 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 
 2. Download and open Telecom_Demo.pbix in Power BI Desktop.
 
-3. The file includes safely masked, pre-loaded mock data so you can interact with filters immediately.
+3. Now you can interact with filters immediately.
 
 ⚠️ Important: Do not click the Refresh button upon opening, as the local source paths are not configured yet.
 
