@@ -7,6 +7,7 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 <img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/91f7e276-4342-4e67-a86a-e950a94df908" />
 <img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/326b5957-c689-4bbf-aefe-a7f661affda2" />
 
+
 <img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/1e3408e4-ee35-44be-8d59-a8e8fd397d1a" />
 <img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/c688813e-5284-47f8-9432-6170955cd981" />
 
@@ -19,13 +20,9 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 
 2. Download and open Telecom_Demo.pbix in Power BI Desktop.
 
-3. Now you can interact with filters immediately.
-
-⚠️ Important: Do not click the Refresh button upon opening, as the local source paths are not configured yet.
+⚠️ Important: Do not click the Refresh button upon opening if u have not setup your sharepoint directory yet.
 
 ### 🔌 Option2: Connecting to Your Own SharePoint Directory
-
-If you want to run a live data refresh locally, you can easily point the model to your own environment:
 
 1. Upload the files from the /data folder in this repository to your SharePoint directory. Ensure your directory mirrors this folder structure:
 
