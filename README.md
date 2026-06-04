@@ -7,18 +7,19 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 <table border="0">
   <tr>
     <td>
-      <img width="300" height="375" alt="Dashboard View 1" src="https://github.com/user-attachments/assets/91f7e276-4342-4e67-a86a-e950a94df908" />
+      <img width="300" height="375" alt="Dashboard View 1" src="https://github.com/user-attachments/assets/91192415-4afa-4aa8-9692-7cf4da850eef" />
+" />
     </td>
     <td>
-      <img width="300" height="375" alt="Dashboard View 2" src="https://github.com/user-attachments/assets/326b5957-c689-4bbf-aefe-a7f661affda2" />
+      <img width="300" height="375" alt="Dashboard View 2" src="https://github.com/user-attachments/assets/4d439e71-2d6e-4971-982b-bfeb1eb1162b" />
     </td>
   </tr>
   <tr>
     <td>
-      <img width="300" height="375" alt="Dashboard View 3" src="https://github.com/user-attachments/assets/1e3408e4-ee35-44be-8d59-a8e8fd397d1a" />
+      <img width="300" height="375" alt="Dashboard View 3" src="https://github.com/user-attachments/assets/8369e054-dad0-4035-8ee5-4699b4d4a594" />
     </td>
     <td>
-      <img width="300" height="375" alt="Dashboard View 4" src="https://github.com/user-attachments/assets/c688813e-5284-47f8-9432-6170955cd981" />
+      <img width="300" height="375" alt="Dashboard View 4" src=""https://github.com/user-attachments/assets/6b17c23e-96fc-41f4-a6ec-ae52f0188daf" />
     </td>
   </tr>
 </table>
