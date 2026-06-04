@@ -4,8 +4,14 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 
 👁️ Dashboard Preview & Demo
 
+<img width="588" height="708" alt="image" src="https://github.com/user-attachments/assets/91f7e276-4342-4e67-a86a-e950a94df908" />
+<img width="585" height="766" alt="image" src="https://github.com/user-attachments/assets/326b5957-c689-4bbf-aefe-a7f661affda2" />
+<img width="587" height="761" alt="image" src="https://github.com/user-attachments/assets/1e3408e4-ee35-44be-8d59-a8e8fd397d1a" />
+<img width="589" height="763" alt="image" src="https://github.com/user-attachments/assets/c688813e-5284-47f8-9432-6170955cd981" />
+
 
 🛠️ How to Inspect This Project
+
 👁️ Option 1: Quick View (Recommended)
 
 1. To explore the layout, architecture, and DAX measures without setting up a data source:
