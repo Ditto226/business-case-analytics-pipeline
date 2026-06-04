@@ -6,6 +6,7 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 
 <img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/91f7e276-4342-4e67-a86a-e950a94df908" />
 <img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/326b5957-c689-4bbf-aefe-a7f661affda2" />
+
 <img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/1e3408e4-ee35-44be-8d59-a8e8fd397d1a" />
 <img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/c688813e-5284-47f8-9432-6170955cd981" />
 
