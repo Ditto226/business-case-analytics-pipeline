@@ -10,7 +10,7 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
       <img width="300" height="375" alt="Dashboard View 1" src="https://github.com/user-attachments/assets/91192415-4afa-4aa8-9692-7cf4da850eef" />
     </td>
     <td>
-      <img width="300" height="375" alt="Dashboard View 2" src="https://github.com/user-attachments/assets/4d439e71-2d6e-4971-982b-bfeb1eb1162b" />
+      <img width="300" height="375" alt="Dashboard View 2" src="https://github.com/user-attachments/assets/b8d8dc63-53b5-4f6f-bac4-aeb8cae8351f" />
     </td>
   </tr>
   <tr>
