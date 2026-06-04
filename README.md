@@ -4,13 +4,24 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 
 ## 👁️ Dashboard Preview & Demo
 
-<img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/91f7e276-4342-4e67-a86a-e950a94df908" />
-<img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/326b5957-c689-4bbf-aefe-a7f661affda2" />
-
-
-<img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/1e3408e4-ee35-44be-8d59-a8e8fd397d1a" />
-<img width="300" height="375" alt="image" src="https://github.com/user-attachments/assets/c688813e-5284-47f8-9432-6170955cd981" />
-
+<table border="0">
+  <tr>
+    <td>
+      <img width="300" height="375" alt="Dashboard View 1" src="https://github.com/user-attachments/assets/91f7e276-4342-4e67-a86a-e950a94df908" />
+    </td>
+    <td>
+      <img width="300" height="375" alt="Dashboard View 2" src="https://github.com/user-attachments/assets/326b5957-c689-4bbf-aefe-a7f661affda2" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img width="300" height="375" alt="Dashboard View 3" src="https://github.com/user-attachments/assets/1e3408e4-ee35-44be-8d59-a8e8fd397d1a" />
+    </td>
+    <td>
+      <img width="300" height="375" alt="Dashboard View 4" src="https://github.com/user-attachments/assets/c688813e-5284-47f8-9432-6170955cd981" />
+    </td>
+  </tr>
+</table>
 
 ## 🛠️ How to Inspect This Project
 
@@ -20,7 +31,7 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 
 2. Download and open Telecom_Demo.pbix in Power BI Desktop.
 
-⚠️ Important: Do not click the Refresh button upon opening if u have not setup your sharepoint directory yet.
+⚠️ Important: Do not click the Refresh button upon opening.
 
 ### 🔌 Option2: Connecting to Your Own SharePoint Directory
 
