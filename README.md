@@ -2,15 +2,20 @@
 
 A comprehensive end-to-end Business Intelligence project demonstrating data engineering, robust ETL pipelines, and interactive analytics using masked Malaysian telecom operational data.
 
+👁️ Dashboard Preview & Demo
+
+
 🛠️ How to Inspect This Project
-To explore the architecture, download and open Telecom_Demo.pbix in Power BI Desktop.
+👁️ Option 1: Quick View (Recommended)
+1. To explore the layout, architecture, and DAX measures without setting up a data source:
 
-👁️ For Visuals & Dashboard Design
-The file includes safely masked, pre-loaded mock data so you can view the layouts and interact with filters immediately.
+2. Download and open Telecom_Demo.pbix in Power BI Desktop.
 
-⚠️ Important: Do not click the Refresh button upon opening the file, as the source paths point have not been setup yet.
+3. The file includes safely masked, pre-loaded mock data so you can interact with filters immediately.
 
-🔌 Connecting to Your Own SharePoint Directory
+⚠️ Important: Do not click the Refresh button upon opening, as the local source paths are not configured yet.
+
+🔌 Option2: Connecting to Your Own SharePoint Directory
 If you want to run a live data refresh locally, you can easily point the model to your own environment:
 
 1. Upload the files from the /data folder in this repository to your SharePoint directory. Ensure your directory mirrors this folder structure:
