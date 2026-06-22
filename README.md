@@ -34,11 +34,11 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
             └── HOLIDAY.xlsx
             └── PRODUCT.xlsx
 
-2.  **Open the Template:** Download and open Project_Template.pbit in Power BI Desktop
+2.  **Open the Template:** Download and open Demo.pbit in Power BI Desktop
 3.  **Input Parameters:** Upon opening, a pop-up window will prompt you for your environment details. Enter your paths into the provided fields:
 
 - **`SharePointURL`**: `https://{your-tenant}.sharepoint.com/sites/{your-site}`
-- **`DocumentLibrary`**: The name of your SharePoint library (e.g., `Shared Documents`).
-- **`TargetFolder`**: The name of the root folder holding your data (e.g., `DATA_FOLDER`).
+- **`DocumentLibrary`**: The name of your SharePoint library (e.g., `Documents`).
+- **`TargetFolder`**: The name of the root folder holding your data (e.g., `DASHBOARD`).
 
 4. **Load Data:** Click Load. Power BI will establish the connection, run the entire M-code ETL pipeline, and populate the interactive dashboards automatically.
