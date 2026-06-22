@@ -1,6 +1,6 @@
 # 📊 Business Case Management ETL & Dashboard
 
-A comprehensive end-to-end Business Intelligence project demonstrating data engineering, robust ETL pipelines, and interactive analytics using masked company operational data. 
+A comprehensive end-to-end Business Intelligence project demonstrating data engineering, robust ETL pipelines, and interactive analytics using masked company operational data.
 
 ## 👁️ Dashboard Preview & Demo
 
@@ -25,17 +25,7 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
 
 ## 🛠️ How to Inspect This Project
 
-### 👁️ Option 1: Quick View (Recommended)
-
-1. To explore the layout, architecture, and DAX measures without setting up a data source:
-
-2. Download and open Demo.pbix in Power BI Desktop.
-
-⚠️ Important: Do not click the Refresh button upon opening.
-
-### 🔌 Option2: Connecting to Your Own SharePoint Directory
-
-1. Upload the files from the /data folder in this repository to your SharePoint directory. Ensure your directory mirrors this folder structure:
+1.  Upload the Data: Upload the files from in this repository to your SharePoint directory. Ensure your directory mirrors this folder structure:
 
         ├── 📁 DATA/
         │   └── Mock_Data.xlsx
@@ -44,6 +34,13 @@ A comprehensive end-to-end Business Intelligence project demonstrating data engi
             └── HOLIDAY.xlsx
             └── PRODUCT.xlsx
 
-    
-2. In Power BI Desktop, click **Transform Data** to open the Power Query Editor.
-3. Locate the **Source** query/parameter step and update the URL path string to match your SharePoint directory link.
+2.  Open the Template: Download and open Project_Template.pbit in Power BI Desktop
+3.  Input Parameters: Upon opening, a pop-up window will prompt you for your environment details. Enter your paths into the provided fields:
+
+### _SharePointURL_: https://{your-tenant}.sharepoint.com/sites/{your-site}
+
+### _DocumentLibrary_: The name of your SharePoint library (e.g., Shared Documents).
+
+### _TargetFolder_: The name of the root folder holding your data (e.g., DATA_FOLDER).
+
+4. Load Data: Click Load. Power BI will establish the connection, run the entire M-code ETL pipeline, and populate the interactive dashboards automatically.
