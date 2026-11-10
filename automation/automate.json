@@ -1,0 +1,1316 @@
+{
+  "name": "96cca0af-8620-5bb2-a39a-d61e7092cf14",
+  "id": "/providers/Microsoft.Flow/flows/96cca0af-8620-5bb2-a39a-d61e7092cf14",
+  "type": "Microsoft.Flow/flows",
+  "properties": {
+    "apiId": "/providers/Microsoft.PowerApps/apis/shared_logicflows",
+    "displayName": "Daily Monitoring Flow (MOCK)",
+    "definition": {
+      "metadata": {
+        "workflowEntityId": null,
+        "processAdvisorMetadata": null,
+        "flowChargedByPaygo": null,
+        "flowclientsuspensionreason": "None",
+        "flowclientsuspensiontime": null,
+        "flowclientsuspensionreasondetails": null,
+        "creator": {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "type": "User",
+          "tenantId": "00000000-0000-0000-0000-000000000002"
+        },
+        "provisioningMethod": "FromDefinition",
+        "failureAlertSubscription": true,
+        "clientLastModifiedTime": "2026-11-10T06:43:30.4328125Z",
+        "lastModifiedBy": "00000000-0000-0000-0000-000000000001",
+        "connectionKeySavedTimeKey": "2026-11-10T06:43:30.4328125Z",
+        "creationSource": "Portal",
+        "modifiedSources": "Portal"
+      },
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "When_a_file_is_created_(properties_only)": {
+          "recurrence": {
+            "frequency": "Minute",
+            "interval": 3
+          },
+          "evaluatedRecurrence": {
+            "frequency": "Minute",
+            "interval": 3
+          },
+          "splitOn": "@triggerOutputs()?['body/value']",
+          "metadata": {
+            "operationMetadataId": "516e8fca-ffc2-5060-8e20-ea3af9c6ac2b"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "dataset": "https://contoso.sharepoint.com/sites/MockOperationsTeam",
+              "table": "c82f6415-d844-5771-bb9d-6f491af37861",
+              "folderPath": "/Shared Documents/General/Mock/DATA (PBI)"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+              "connectionName": "shared_sharepointonline",
+              "operationId": "GetOnNewFileItems"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Initialize_TestMode": {
+          "runAfter": {},
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "IsTestMode",
+                "type": "integer",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "Refresh_dataset": {
+          "actions": {},
+          "runAfter": {
+            "Initialize_TestMode": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Refresh_a_dataset": {
+                "metadata": {
+                  "operationMetadataId": "894f1477-ffc0-5c20-b4e2-495e5d041794"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "groupid": "myworkspace",
+                    "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+                    "connectionName": "shared_powerbi",
+                    "operationId": "RefreshDataset"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              },
+              "Delay": {
+                "runAfter": {
+                  "Refresh_a_dataset": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "873cf9f5-96af-5088-96c3-dafc7a9e8be6"
+                },
+                "type": "Wait",
+                "inputs": {
+                  "interval": {
+                    "count": 2,
+                    "unit": "Minute"
+                  }
+                }
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@variables('IsTestMode')",
+                  1
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "be8e502f-bb30-53a5-b77d-2ccb511378ee"
+          },
+          "type": "If"
+        },
+        "ReportDate": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\n  ROW (\n    \"ReportDate\", FORMAT([MaxDate], \"dd MMM yyyy\")\n  )",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "Refresh_dataset": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "025fd674-82a5-564a-a607-be3f69a477ae"
+          }
+        },
+        "Terminate_switch": {
+          "actions": {
+            "Terminate": {
+              "metadata": {
+                "operationMetadataId": "0f635e8c-9b32-5879-93c2-98647e9a53fc"
+              },
+              "type": "Terminate",
+              "inputs": {
+                "runStatus": "Cancelled"
+              }
+            }
+          },
+          "runAfter": {
+            "ReportDate": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {}
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  1,
+                  0
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "23208fd6-d859-5a2f-af56-3b6e0d60248c"
+          },
+          "type": "If"
+        },
+        "Repeated": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\n    SELECTCOLUMNS(\n        CALCULATETABLE(\n            'Repeat',\n            'Repeat'[Repeat] = \"Type0\",\n            'Repeat'[Repeat Count] = 1,\n            //'Repeat'[BUSINESS_DAY_AGING] = 1,\n            'Repeat'[CASE_AGING_CAL_DAYS] = 1,\n            'Repeat'[CASE_STATUS] <> \"Closed\"\n        ),\n        \"CaseID\", 'Repeat'[CASE_ID],\n        \"CreatedDate\", FORMAT( 'Repeat'[Date_Creation], \"dd-MM-yyyy\" ),\n        \"AccountNo\", 'Repeat'[ACCOUNT_NO],\n        \"RepeatCount\", 'Repeat'[Repeat Count],\n        \"PastCases\", 'Repeat'[Past Cases]\n    )",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "Terminate_switch": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "489eea87-22b3-5375-99d8-029395655e8d"
+          }
+        },
+        "Get_items": {
+          "runAfter": {
+            "Repeated": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6b830b47-87bf-5c63-a60c-d7f6e8b32432"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "dataset": "https://contoso.sharepoint.com/sites/MockOperationsTeam",
+              "table": "89f61091-d150-57ff-a6e4-7591297bf590",
+              "$filter": "IsAvailable eq 1",
+              "$orderby": "LastAssigned asc"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+              "connectionName": "shared_sharepointonline",
+              "operationId": "GetItems"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Compose_Stafflist": {
+          "runAfter": {
+            "Get_items": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9d978847-501c-568a-89f4-8106ec75a959"
+          },
+          "type": "Compose",
+          "inputs": "@outputs('Get_items')?['body/value']"
+        },
+        "Initialize_StaffIndex": {
+          "runAfter": {
+            "Compose_Stafflist": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ba08215f-ddc0-5b98-9aaa-8900a13b71f6"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "StaffIndex",
+                "type": "integer",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "Initialize_StaffCount": {
+          "runAfter": {
+            "Initialize_StaffIndex": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "5f0393d8-bb38-59ff-8a6d-d00c3c6a8d5e"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "StaffCounts",
+                "type": "integer",
+                "value": "@length(outputs('Get_items')?['body/value'])"
+              }
+            ]
+          }
+        },
+        "Initialize_StaffList": {
+          "runAfter": {
+            "Initialize_StaffCount": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8d4fa2a0-fdf6-55b0-9e5e-8aa1e7b94c92"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "AssignedList",
+                "type": "array",
+                "value": []
+              }
+            ]
+          }
+        },
+        "Round_Robin": {
+          "foreach": "@outputs('Repeated')?['body']?['results']?[0]?['tables']?[0]?['rows']",
+          "actions": {
+            "Compose_1": {
+              "metadata": {
+                "operationMetadataId": "e8e611d8-0b67-51ec-a28e-b021f03a0b33"
+              },
+              "type": "Compose",
+              "inputs": "@outputs('Get_items')?['body/value'][variables('StaffIndex')]?['Name']"
+            },
+            "Condition": {
+              "actions": {
+                "Set_variable": {
+                  "metadata": {
+                    "operationMetadataId": "ffee041c-be43-52d7-ad81-8ab63147bc69"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "StaffIndex",
+                    "value": 0
+                  }
+                }
+              },
+              "runAfter": {
+                "Increment_variable": [
+                  "Succeeded"
+                ]
+              },
+              "else": {
+                "actions": {}
+              },
+              "expression": {
+                "and": [
+                  {
+                    "greaterOrEquals": [
+                      "@variables('StaffIndex')",
+                      "@variables('StaffCounts')"
+                    ]
+                  }
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "f1ed17c1-71c2-5211-b6a8-5cee1127cbda"
+              },
+              "type": "If"
+            },
+            "Append_to_array_variable": {
+              "runAfter": {
+                "Compose_1": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "09e1a079-ed1d-54e5-9a36-6f446942f460"
+              },
+              "type": "AppendToArrayVariable",
+              "inputs": {
+                "name": "AssignedList",
+                "value": {
+                  "CaseID": "@items('Round_Robin')?['[CaseID]']",
+                  "CreatedDate": "@items('Round_Robin')?['[CreatedDate]']",
+                  "AccountNo": "@items('Round_Robin')?['[AccountNo]']",
+                  "RepeatCount": "@items('Round_Robin')?['[RepeatCount]']",
+                  "PastCases": "@items('Round_Robin')?['[PastCases]']",
+                  "AssignedStaff": "@outputs('Compose_1')"
+                }
+              }
+            },
+            "Update_item": {
+              "runAfter": {
+                "Append_to_array_variable": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8342b492-691b-5def-ada3-0b549286fa5a"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "dataset": "https://contoso.sharepoint.com/sites/MockOperationsTeam",
+                  "table": "89f61091-d150-57ff-a6e4-7591297bf590",
+                  "id": "@outputs('Get_items')?['body/value'][variables('StaffIndex')]?['ID']",
+                  "item/LastAssigned": "@utcNow()"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                  "connectionName": "shared_sharepointonline",
+                  "operationId": "PatchItem"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Increment_variable": {
+              "runAfter": {
+                "Update_item": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "6eabf98b-4d37-5fa4-8942-f92564686596"
+              },
+              "type": "IncrementVariable",
+              "inputs": {
+                "name": "StaffIndex",
+                "value": 1
+              }
+            }
+          },
+          "runAfter": {
+            "Initialize_StaffList": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6004499a-92b6-5491-b398-53c13a6ad746"
+          },
+          "type": "Foreach",
+          "runtimeConfiguration": {
+            "concurrency": {
+              "repetitions": 1
+            }
+          }
+        },
+        "SortList": {
+          "runAfter": {
+            "Round_Robin": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7e309164-aedd-5511-8f31-ffd10d9a3611"
+          },
+          "type": "Compose",
+          "inputs": "@sort(variables('AssignedList'), 'AssignedStaff')"
+        },
+        "CSV_Table_Repeat": {
+          "runAfter": {
+            "SortList": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "89db3560-7903-52f5-928e-be9a58d84a27"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@outputs('SortList')",
+            "format": "CSV"
+          }
+        },
+        "Email_Repeat": {
+          "actions": {
+            "Send_an_email_notification_(V3)_Repeated_Me": {
+              "metadata": {
+                "operationMetadataId": "7b0811ee-5b88-5a5f-9dba-cce92f95a2f1"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "request/to": "test.owner@contoso.com",
+                  "request/subject": "Daily Repeated Cases Monitoring for @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} ",
+                  "request/text": "<style>\n  table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 13px; }\n  th { background-color: #004b87; color: #ffffff; font-weight: bold; border: 1px solid #d3d3d3; padding: 8px 12px; text-align: left; }\n  td { border: 1px solid #d3d3d3; padding: 8px 12px; color: #333333; }\n  tr:nth-child(even) { background-color: #f9f9f9; }\n</style>\n\n<p>Hi team,</p>\n<p>Kindly find the attached repeated cases for our @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} monitoring.</p>\n\n<p>Regards,<br>\n<strong>Alex Tan</strong><br>\nMock Ops Team</p>",
+                  "request/files": "@body('CSV_Table_Repeat')",
+                  "request/filenames": "Repeated @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')}.csv"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+                  "connectionName": "shared_sendmail",
+                  "operationId": "SendEmailV3"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "CSV_Table_Repeat": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Send_an_email_notification_(V3)_Repeated": {
+                "metadata": {
+                  "operationMetadataId": "ebf45583-ef2b-5316-a792-cd0ae47708f1"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "request/to": "lead.one@contoso.com;lead.two@contoso.com;lead.three@contoso.com;lead.four@contoso.com",
+                    "request/subject": "Daily Repeated Cases Monitoring for @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} ",
+                    "request/text": "<style>\n  table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 13px; }\n  th { background-color: #004b87; color: #ffffff; font-weight: bold; border: 1px solid #d3d3d3; padding: 8px 12px; text-align: left; }\n  td { border: 1px solid #d3d3d3; padding: 8px 12px; color: #333333; }\n  tr:nth-child(even) { background-color: #f9f9f9; }\n</style>\n\n<p>Hi team,</p>\n<p>Kindly find the attached repeated cases for our @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} monitoring.</p>\n\n<p>Regards,<br>\n<strong>Alex Tan</strong><br>\nMock Ops Team</p>",
+                    "request/cc": "ops-team@contoso.com;\ntest.owner@contoso.com",
+                    "request/files": "@body('CSV_Table_Repeat')",
+                    "request/filenames": "Repeated @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')}.csv"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+                    "connectionName": "shared_sendmail",
+                    "operationId": "SendEmailV3"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@variables('IsTestMode')",
+                  1
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "79aaa250-43db-5a6f-80c8-de10b8d4ae5f"
+          },
+          "type": "If"
+        },
+        "LastDay_CRT_": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\nROW(\n    \"ResultMonth\", \n    MONTH(\n        CALCULATE(\n            MIN(CRT[Date_Creation]),\n            CRT[Counter CRT] = \"Today\",\n            CRT[Performance] = 1\n        )\n    ),\n    \"ResultYear\", \n    YEAR(\n        CALCULATE(\n            MIN(CRT[Date_Creation]),\n            CRT[Counter CRT] = \"Today\",\n            CRT[Performance] = 1\n        )\n    )\n)",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "Terminate_switch": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b10e9e5b-6b85-5b4c-9ec1-871495ee6bb9"
+          }
+        },
+        "Compose_Month_CRT_": {
+          "runAfter": {
+            "LastDay_CRT_": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@outputs('LastDay_CRT_')?['body/firstTableRows']?[0]?['[ResultMonth]']"
+        },
+        "Compose_Month_Name_CRT_": {
+          "runAfter": {
+            "Compose_Month_CRT_": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@createArray('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')[sub(int(outputs('Compose_Month_CRT_')), 1)]"
+        },
+        "Compose_Year_CRT_": {
+          "runAfter": {
+            "Compose_Month_Name_CRT_": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@outputs('LastDay_CRT_')?['body/firstTableRows']?[0]?['[ResultYear]']"
+        },
+        "CRT_Metrics": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\nVAR _ReportYear  = @{outputs('Compose_Year_CRT_')}\nVAR _ReportMonth = @{outputs('Compose_Month_CRT_')}\nRETURN\nCALCULATETABLE (\n    UNION (\n        ROW (\n            \"Category\", \"Overall\",\n            \"Total_Cases\", FORMAT ( [CRT Total Cases], \"#,##0\" ),\n            \"Performance\", FORMAT ( [CRT Meet%], \"0.0%\" ),\n            \"Potential\", FORMAT ( [CRT MeetP%], \"0.0%\" ),\n            \"To_Close_Today\", FORMAT ( [CRT Volume To Meet Daily], \"#,##0\" ),\n            \"Target\", FORMAT ( [CRT Target], \"0.0%\" )\n        ),\n        ROW (\n            \"Category\", \"Tech\",\n            \"Total_Cases\", FORMAT ( CALCULATE ( [CRT Total Cases], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"#,##0\" ),\n            \"Performance\", FORMAT ( CALCULATE ( [CRT Meet%], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"0.0%\" ),\n            \"Potential\", FORMAT ( CALCULATE ( [CRT MeetP%], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"0.0%\" ),\n            \"To_Close_Today\", FORMAT ( CALCULATE ( [CRT Volume To Meet Daily], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"#,##0\" ),\n            \"Target\", FORMAT ( CALCULATE ( [CRT Target], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"0.0%\" )\n        ),\n        ROW (\n            \"Category\", \"Non-Tech\",\n            \"Total_Cases\", FORMAT ( CALCULATE ( [CRT Total Cases], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"#,##0\" ),\n            \"Performance\", FORMAT ( CALCULATE ( [CRT Meet%], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"0.0%\" ),\n            \"Potential\", FORMAT ( CALCULATE ( [CRT MeetP%], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"0.0%\" ),\n            \"To_Close_Today\", FORMAT ( CALCULATE ( [CRT Volume To Meet Daily], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"#,##0\" ),\n            \"Target\", FORMAT ( CALCULATE ( [CRT Target], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"0.0%\" )\n        )\n    ),\n    KEEPFILTERS ( 'CRT'[Performance] = 1 ),\n    KEEPFILTERS ( YEAR ( 'CRT'[Date_Creation] ) = _ReportYear ),\n    KEEPFILTERS ( MONTH ( 'CRT'[Date_Creation] ) = _ReportMonth )\n)",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "Compose_Year_CRT_": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e671bf23-bbbd-5b99-8d2b-f24d63f3659d"
+          }
+        },
+        "HTML_Table_CRT": {
+          "runAfter": {
+            "CRT_Metrics": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "faa6fd9e-c5a6-5557-85cb-f21aa4955860"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@outputs('CRT_Metrics')?['body']?['results']?[0]?['tables']?[0]?['rows']",
+            "format": "HTML",
+            "columns": [
+              {
+                "header": "Category",
+                "value": "@item()?['[Category]']"
+              },
+              {
+                "header": "TotalCases",
+                "value": "@item()?['[Total_Cases]']"
+              },
+              {
+                "header": "Performance",
+                "value": "@item()?['[Performance]']"
+              },
+              {
+                "header": "Potential",
+                "value": "@item()?['[Potential]']"
+              },
+              {
+                "header": "Target",
+                "value": "@item()?['[Target]']"
+              }
+            ]
+          }
+        },
+        "Cases_CRT": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\n    SELECTCOLUMNS(\n        CALCULATETABLE(\n            'CRT',\n            'CRT'[Performance] = 1,\n            'CRT'[Counter CRT] = \"Today\"\n        ),\n        \"CaseID\", 'CRT'[CASE_ID],\n        \"CreatedDate\", FORMAT( 'CRT'[Date_Creation], \"dd-MM-yyyy\" ),\n        \"Type\", 'CRT'[Type0],\n        \"Owner\", 'CRT'[CASE_OWNER_BUSINESS_UNIT],\n        \"Creator\", 'CRT'[CREATOR_BUSINESS_UNIT]\n    )",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "HTML_Table_CRT": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "456ed6b8-2b75-5287-875d-ab23e18d5900"
+          }
+        },
+        "CSV_Table_CRT_TE": {
+          "runAfter": {
+            "Cases_CRT": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4e208861-8ca7-5c55-b8e9-2d70902f678d"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@outputs('Cases_CRT')?['body/firstTableRows']",
+            "format": "CSV",
+            "columns": [
+              {
+                "header": "CaseID",
+                "value": "@item()?['[CaseID]']"
+              },
+              {
+                "header": "CreatedDate",
+                "value": "@item()?['[CreatedDate]']"
+              },
+              {
+                "header": "Type",
+                "value": "@item()?['[Type]']"
+              },
+              {
+                "header": "Owner",
+                "value": "@item()?['[Owner]']"
+              },
+              {
+                "header": "Creator",
+                "value": "@item()?['[Creator]']"
+              }
+            ]
+          }
+        },
+        "Email_CRT_": {
+          "actions": {
+            "Send_an_email_notification_(V3)_CRT_Me": {
+              "metadata": {
+                "operationMetadataId": "103b059c-8e33-5673-b14c-6e5d2bacacfd"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "request/to": "test.owner@contoso.com",
+                  "request/subject": "Daily CRT Cases Monitoring for @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} ",
+                  "request/text": "<style>\n  table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 13px; }\n  th { background-color: #004b87; color: #ffffff; font-weight: bold; border: 1px solid #d3d3d3; padding: 8px 12px; text-align: left; }\n  td { border: 1px solid #d3d3d3; padding: 8px 12px; color: #333333; }\n  tr:nth-child(even) { background-color: #f9f9f9; }\n</style>\n\n<p>Hi Sam,</p>\n<p>Please find below the latest CRT performance for @{outputs('Compose_Month_Name_CRT_')} @{outputs('Compose_Year_CRT_')} as of @{first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]']}.</p>\n\n@{body('HTML_Table_CRT')}\n\n<p>Kindly find attached are the potential cases that need to be closed by @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} for your monitoring.</p>\n\n<p>Regards,<br>\n<strong>Alex Tan</strong><br>\nMock Ops Team</p>",
+                  "request/files": "@body('CSV_Table_CRT_TE')",
+                  "request/filenames": "CRT LastDay @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')}.csv"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+                  "connectionName": "shared_sendmail",
+                  "operationId": "SendEmailV3"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "CSV_Table_CRT_TE": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Send_an_email_notification_(V3)_CRT": {
+                "metadata": {
+                  "operationMetadataId": "e759511d-1002-59fa-a8c4-4874d554610c"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "request/to": "crt.owner@contoso.com",
+                    "request/subject": "Daily CRT Cases Monitoring for @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} ",
+                    "request/text": "<style>\n  table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 13px; }\n  th { background-color: #004b87; color: #ffffff; font-weight: bold; border: 1px solid #d3d3d3; padding: 8px 12px; text-align: left; }\n  td { border: 1px solid #d3d3d3; padding: 8px 12px; color: #333333; }\n  tr:nth-child(even) { background-color: #f9f9f9; }\n</style>\n\n<p>Hi Sam,</p>\n<p>Please find below the latest CRT performance for @{outputs('Compose_Month_Name_CRT_')} @{outputs('Compose_Year_CRT_')} as of @{first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]']}.</p>\n\n@{body('HTML_Table_CRT')}\n\n<p>Kindly find attached are the potential cases that need to be closed by @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} for your monitoring.</p>\n\n<p>Regards,<br>\n<strong>Alex Tan</strong><br>\nMock Ops Team</p>",
+                    "request/cc": "ops-team@contoso.com",
+                    "request/files": "@body('CSV_Table_CRT_TE')",
+                    "request/filenames": "CRT LastDay @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')}.csv"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+                    "connectionName": "shared_sendmail",
+                    "operationId": "SendEmailV3"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@variables('IsTestMode')",
+                  1
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3c389a17-4470-5c56-9900-604da36f5548"
+          },
+          "type": "If"
+        },
+        "LastDay_CRT_TE": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\nROW(\n    \"ResultMonth\", \n    MONTH(\n        CALCULATE(\n            MIN(CRT[Date_Creation]),\n            CRT[Counter CRT] = \"Today\",\n            CRT[Performance] = 2\n        )\n    ),\n    \"ResultYear\", \n    YEAR(\n        CALCULATE(\n            MIN(CRT[Date_Creation]),\n            CRT[Counter CRT] = \"Today\",\n            CRT[Performance] = 2\n        )\n    )\n)",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "Terminate_switch": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "5610e89b-1bc1-586d-a4fe-7be7c7d0144e"
+          }
+        },
+        "Compose_Month_CRT_TE": {
+          "runAfter": {
+            "LastDay_CRT_TE": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@outputs('LastDay_CRT_TE')?['body/firstTableRows']?[0]?['[ResultMonth]']"
+        },
+        "Compose_Month_Name_CRT_TE": {
+          "runAfter": {
+            "Compose_Month_CRT_TE": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@createArray('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')[sub(int(outputs('Compose_Month_CRT_TE')), 1)]"
+        },
+        "Compose_Year_CRT_TE": {
+          "runAfter": {
+            "Compose_Month_Name_CRT_TE": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@outputs('LastDay_CRT_TE')?['body/firstTableRows']?[0]?['[ResultYear]']"
+        },
+        "CRT_TE_Metrics": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\nVAR _ReportYear  = @{outputs('Compose_Year_CRT_TE')}\nVAR _ReportMonth = @{outputs('Compose_Month_CRT_TE')}\nRETURN\nCALCULATETABLE (\n    UNION (\n        ROW (\n            \"Category\", \"Overall\",\n            \"Total_Cases\", FORMAT ( [CRT Total Cases], \"#,##0\" ),\n            \"Performance\", FORMAT ( [CRT Meet%], \"0.0%\" ),\n            \"Potential\", FORMAT ( [CRT MeetP%], \"0.0%\" ),\n            \"To_Close_Today\", FORMAT ( [CRT Volume To Meet Daily], \"#,##0\" ),\n            \"Target\", FORMAT ( [CRT Target], \"0.0%\" )\n        ),\n        ROW (\n            \"Category\", \"Tech\",\n            \"Total_Cases\", FORMAT ( CALCULATE ( [CRT Total Cases], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"#,##0\" ),\n            \"Performance\", FORMAT ( CALCULATE ( [CRT Meet%], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"0.0%\" ),\n            \"Potential\", FORMAT ( CALCULATE ( [CRT MeetP%], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"0.0%\" ),\n            \"To_Close_Today\", FORMAT ( CALCULATE ( [CRT Volume To Meet Daily], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"#,##0\" ),\n            \"Target\", FORMAT ( CALCULATE ( [CRT Target], KEEPFILTERS ( 'CRT'[Type0] = \"Tech\" ) ), \"0.0%\" )\n        ),\n        ROW (\n            \"Category\", \"Non-Tech\",\n            \"Total_Cases\", FORMAT ( CALCULATE ( [CRT Total Cases], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"#,##0\" ),\n            \"Performance\", FORMAT ( CALCULATE ( [CRT Meet%], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"0.0%\" ),\n            \"Potential\", FORMAT ( CALCULATE ( [CRT MeetP%], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"0.0%\" ),\n            \"To_Close_Today\", FORMAT ( CALCULATE ( [CRT Volume To Meet Daily], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"#,##0\" ),\n            \"Target\", FORMAT ( CALCULATE ( [CRT Target], KEEPFILTERS ( 'CRT'[Type0] = \"Non-Tech\" ) ), \"0.0%\" )\n        )\n    ),\n    KEEPFILTERS ( 'CRT'[Performance] = 2 ),\n    KEEPFILTERS ( YEAR ( 'CRT'[Date_Creation] ) = _ReportYear ),\n    KEEPFILTERS ( MONTH ( 'CRT'[Date_Creation] ) = _ReportMonth )\n)",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "Compose_Year_CRT_TE": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "81be600a-392f-5142-9f08-6ee0195fac31"
+          }
+        },
+        "HTML_Table_CRT_TE": {
+          "runAfter": {
+            "CRT_TE_Metrics": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9e191798-63e3-52fe-a4cd-941a25251a46"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@outputs('CRT_TE_Metrics')?['body']?['results']?[0]?['tables']?[0]?['rows']",
+            "format": "HTML",
+            "columns": [
+              {
+                "header": "Category",
+                "value": "@item()?['[Category]']"
+              },
+              {
+                "header": "TotalCases",
+                "value": "@item()?['[Total_Cases]']"
+              },
+              {
+                "header": "Performance",
+                "value": "@item()?['[Performance]']"
+              },
+              {
+                "header": "Potential",
+                "value": "@item()?['[Potential]']"
+              },
+              {
+                "header": "Target",
+                "value": "@item()?['[Target]']"
+              }
+            ]
+          }
+        },
+        "Cases_CRT_TE": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\n    SELECTCOLUMNS(\n        CALCULATETABLE(\n            'CRT',\n            'CRT'[Performance] = 2,\n            'CRT'[Counter CRT] = \"Today\"\n        ),\n        \"CaseID\", 'CRT'[CASE_ID],\n        \"CreatedDate\", FORMAT( 'CRT'[Date_Creation], \"dd-MM-yyyy\" ),\n        \"Type\", 'CRT'[Type0],\n        \"Owner\", 'CRT'[CASE_OWNER_BUSINESS_UNIT],\n        \"Creator\", 'CRT'[CREATOR_BUSINESS_UNIT]\n    )",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "HTML_Table_CRT_TE": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f22162f4-e002-5000-ad13-3a16eb6f6a7e"
+          }
+        },
+        "CSV_Table_CRT": {
+          "runAfter": {
+            "Cases_CRT_TE": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "cea782c0-1954-5f3b-9471-4d9ab042a9f6"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@outputs('Cases_CRT_TE')?['body/firstTableRows']",
+            "format": "CSV",
+            "columns": [
+              {
+                "header": "CaseID",
+                "value": "@item()?['[CaseID]']"
+              },
+              {
+                "header": "CreatedDate",
+                "value": "@item()?['[CreatedDate]']"
+              },
+              {
+                "header": "Type",
+                "value": "@item()?['[Type]']"
+              },
+              {
+                "header": "Owner",
+                "value": "@item()?['[Owner]']"
+              },
+              {
+                "header": "Creator",
+                "value": "@item()?['[Creator]']"
+              }
+            ]
+          }
+        },
+        "Email_CRT_TE": {
+          "actions": {
+            "Send_an_email_notification_(V3)_CRT-TE_Me": {
+              "metadata": {
+                "operationMetadataId": "715e0207-2183-5dad-8819-f2b7584b7416"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "request/to": "test.owner@contoso.com",
+                  "request/subject": "Daily CRT-TE Cases Monitoring for @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} ",
+                  "request/text": "<style>\n  table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 13px; }\n  th { background-color: #004b87; color: #ffffff; font-weight: bold; border: 1px solid #d3d3d3; padding: 8px 12px; text-align: left; }\n  td { border: 1px solid #d3d3d3; padding: 8px 12px; color: #333333; }\n  tr:nth-child(even) { background-color: #f9f9f9; }\n</style>\n\n<p>Hi Jordan,</p>\n<p>Please find below the latest CRT-TE performance for @{outputs('Compose_Month_Name_CRT_TE')} @{outputs('Compose_Year_CRT_TE')} as of @{first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]']}.</p>\n\n@{body('HTML_Table_CRT_TE')}\n\n<p>Kindly find attached are the potential cases that need to be closed by @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} for your monitoring.</p>\n\n<p>Regards,<br>\n<strong>Alex Tan</strong><br>\nMock Ops Team</p>",
+                  "request/files": "@body('CSV_Table_CRT')",
+                  "request/filenames": "CRT-TE LastDay @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')}.csv"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+                  "connectionName": "shared_sendmail",
+                  "operationId": "SendEmailV3"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "CSV_Table_CRT": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Send_an_email_notification_(V3)_CRT-TE": {
+                "metadata": {
+                  "operationMetadataId": "75c64356-235f-57ae-bd70-20622ba3afe4"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "request/to": "crtte.owner@contoso.com",
+                    "request/subject": "Daily CRT-TE Cases Monitoring for @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} ",
+                    "request/text": "<style>\n  table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 13px; }\n  th { background-color: #004b87; color: #ffffff; font-weight: bold; border: 1px solid #d3d3d3; padding: 8px 12px; text-align: left; }\n  td { border: 1px solid #d3d3d3; padding: 8px 12px; color: #333333; }\n  tr:nth-child(even) { background-color: #f9f9f9; }\n</style>\n\n<p>Hi Jordan,</p>\n<p>Please find below the latest CRT-TE performance for @{outputs('Compose_Month_Name_CRT_TE')} @{outputs('Compose_Year_CRT_TE')} as of @{first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]']}.</p>\n\n@{body('HTML_Table_CRT_TE')}\n\n<p>Kindly find attached are the potential cases that need to be closed by @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} for your monitoring.</p>\n\n<p>Regards,<br>\n<strong>Alex Tan</strong><br>\nMock Ops Team</p>",
+                    "request/cc": "ops-team@contoso.com",
+                    "request/files": "@body('CSV_Table_CRT')",
+                    "request/filenames": "CRT-TE LastDay @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')}.csv"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+                    "connectionName": "shared_sendmail",
+                    "operationId": "SendEmailV3"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@variables('IsTestMode')",
+                  1
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e6266ca5-4527-5f88-a788-96f47146ad44"
+          },
+          "type": "If"
+        },
+        "CI_Metrics": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\nVAR _ReportDate  = [MaxDate]\nVAR _ReportYear  = YEAR(_ReportDate)\nVAR _ReportMonth  = MONTH(_ReportDate)\n\nRETURN\nCALCULATETABLE (\n    UNION (\n        ROW (\n            \"Category\", \"Overall\",\n            \"Total Cases\", FORMAT ( [CI Total Cases], \"#,##0\" ),\n            \"Current CI\", FORMAT ( [CI MTD], \"0.00\" ),\n            \"Normalized CI\", FORMAT ( [CI Normalized], \"0.00\" ),\n            \"Target CI\", FORMAT ( [CI Target], \"0.00\" )\n        ),\n        ROW (\n            \"Category\", \"Tech\",\n            \"Total Cases\", FORMAT ( CALCULATE ( [CI Total Cases], KEEPFILTERS ( 'CI'[Type0] = \"Tech\" ) ), \"#,##0\" ),\n            \"Current CI\", FORMAT ( CALCULATE ( [CI MTD], KEEPFILTERS ( 'CI'[Type0] = \"Tech\" ) ), \"0.00\" ),\n            \"Normalized CI\", FORMAT ( CALCULATE ( [CI Normalized], KEEPFILTERS ( 'CI'[Type0] = \"Tech\" ) ), \"0.00\" ),\n            \"Target CI\", FORMAT ( CALCULATE ( [CI Target], KEEPFILTERS ( 'CI'[Type0] = \"Tech\" ) ), \"0.00\" )\n        ),\n        ROW (\n            \"Category\", \"Non-Tech\",\n            \"Total Cases\", FORMAT ( CALCULATE ( [CI Total Cases], KEEPFILTERS ( 'CI'[Type0] = \"Non-Tech\" ) ), \"#,##0\" ),\n            \"Current CI\", FORMAT ( CALCULATE ( [CI MTD], KEEPFILTERS ( 'CI'[Type0] = \"Non-Tech\" ) ), \"0.00\" ),\n            \"Normalized CI\", FORMAT ( CALCULATE ( [CI Normalized], KEEPFILTERS ( 'CI'[Type0] = \"Non-Tech\" ) ), \"0.00\" ),\n            \"Target CI\", FORMAT ( CALCULATE ( [CI Target], KEEPFILTERS ( 'CI'[Type0] = \"Non-Tech\" ) ), \"0.00\" )\n        )\n    ),\n    KEEPFILTERS ( YEAR ( 'Date'[Date] ) = _ReportYear ),\n    KEEPFILTERS ( MONTH ( 'Date'[Date] ) = _ReportMonth )\n)",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "Terminate_switch": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b517f0af-3729-5d22-8b7d-e249b49d7d66"
+          }
+        },
+        "HTML_Table_CI_Metrics": {
+          "runAfter": {
+            "CI_Metrics": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "87ef51f7-4615-567c-bc2d-12ec21ec3067"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@outputs('CI_Metrics')?['body']?['results']?[0]?['tables']?[0]?['rows']",
+            "format": "HTML",
+            "columns": [
+              {
+                "header": "Category",
+                "value": "@item()?['[Category]']"
+              },
+              {
+                "header": "Volume",
+                "value": "@item()?['[Total Cases]']"
+              },
+              {
+                "header": "Current CI",
+                "value": "@item()?['[Current CI]']"
+              },
+              {
+                "header": "Normalized CI",
+                "value": "@item()?['[Normalized CI]']"
+              },
+              {
+                "header": "Target CI",
+                "value": "@item()?['[Target CI]']"
+              }
+            ]
+          }
+        },
+        "Spike_Sub_Area": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\nTOPN(\n    5,\n    CALCULATETABLE(\n        ADDCOLUMNS(\n            VALUES('CI'[CASE_SUB_AREA]),\n            \"CurrentVal\", [CI Total Cases],\n            \"PrevVal\", [CI Total Cases Last Week],\n            \"Delta\", [CI Delta Volume]\n        ),\n        DATESINPERIOD('Date'[Date], [MaxDate], -7, DAY)\n    ),\n    [Delta],\n    DESC\n)\nORDER BY [Delta] DESC",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "HTML_Table_CI_Metrics": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e714899a-72c3-515c-9bc3-d76e0d2cdd2d"
+          }
+        },
+        "HTML_Table_Spike_Sub_Area": {
+          "runAfter": {
+            "Spike_Sub_Area": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3d262e18-c6b3-59c1-a87d-09c5ff7181a9"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@outputs('Spike_Sub_Area')?['body']?['results']?[0]?['tables']?[0]?['rows']",
+            "format": "HTML",
+            "columns": [
+              {
+                "header": "SubArea",
+                "value": "@item()?['CI[CASE_SUB_AREA]']"
+              },
+              {
+                "header": "Last1Week",
+                "value": "@item()?['[CurrentVal]']"
+              },
+              {
+                "header": "Last2Week",
+                "value": "@item()?['[PrevVal]']"
+              },
+              {
+                "header": "Spike",
+                "value": "@item()?['[Delta]']"
+              }
+            ]
+          }
+        },
+        "Spike_Category": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "groupid": "myworkspace",
+              "datasetid": "b0bef2cc-3db8-55ce-8d0a-e0276c7e3308",
+              "specification/query": "EVALUATE\nTOPN(\n    5,\n    CALCULATETABLE(\n        ADDCOLUMNS(\n            VALUES('CI'[CASE_CATEGORY]),\n            \"CurrentVal\", [CI Total Cases],\n            \"PrevVal\", [CI Total Cases Last Week],\n            \"Delta\", [CI Delta Volume]\n        ),\n        DATESINPERIOD('Date'[Date], [MaxDate], -7, DAY)\n    ),\n    [Delta],\n    DESC\n)\nORDER BY [Delta] DESC",
+              "specification/serializerSettings/includeNulls": false
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+              "connectionName": "shared_powerbi",
+              "operationId": "ExecuteDatasetQuery"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "runAfter": {
+            "HTML_Table_Spike_Sub_Area": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c746f18c-6d0a-59d8-aa62-2d61181d8d78"
+          }
+        },
+        "HTML_Table_Spike_Category": {
+          "runAfter": {
+            "Spike_Category": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "55ab4113-ff90-5afe-a205-05605aa41cb6"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@outputs('Spike_Category')?['body']?['results']?[0]?['tables']?[0]?['rows']",
+            "format": "HTML",
+            "columns": [
+              {
+                "header": "Category",
+                "value": "@item()?['CI[CASE_CATEGORY]']"
+              },
+              {
+                "header": "Last1Week",
+                "value": "@item()?['[CurrentVal]']"
+              },
+              {
+                "header": "Last2Week",
+                "value": "@item()?['[PrevVal]']"
+              },
+              {
+                "header": "Spike",
+                "value": "@item()?['[Delta]']"
+              }
+            ]
+          }
+        },
+        "Email_CI": {
+          "actions": {
+            "Send_an_email_notification_(V3)_Spike_Me": {
+              "metadata": {
+                "operationMetadataId": "ccf79e57-2e7e-5602-84ca-d828dfb302fd"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "request/to": "test.owner@contoso.com",
+                  "request/subject": "Daily Complaint Index Monitoring for @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} ",
+                  "request/text": "<style>\n  table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 13px; }\n  th { background-color: #004b87; color: #ffffff; font-weight: bold; border: 1px solid #d3d3d3; padding: 8px 12px; text-align: left; }\n  td { border: 1px solid #d3d3d3; padding: 8px 12px; color: #333333; }\n  tr:nth-child(even) { background-color: #f9f9f9; }\n</style>\n\n<p>Hi team,</p>\n<p>Please find below the latest Complaint Index performance as of @{first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]']}.</p>\n\n@{body('HTML_Table_CI_Metrics')}\n\n<p>Below are the top 5 sub areas and categories based on weekly complaint volume spike for our monitoring.</p>\n\nSub Area:\n@{body('HTML_Table_Spike_Sub_Area')}\n\n<p></p>\n\nCategory:\n@{body('HTML_Table_Spike_Category')}\n\n<p>Regards,<br>\n<strong>Alex Tan</strong><br>\nMock Ops Team</p>"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+                  "connectionName": "shared_sendmail",
+                  "operationId": "SendEmailV3"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "HTML_Table_Spike_Category": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Send_an_email_notification_(V3)_Spike": {
+                "metadata": {
+                  "operationMetadataId": "bf96376d-3627-5d29-9c03-abbf73dc6d81"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "request/to": "ops-team@contoso.com",
+                    "request/subject": "Daily Complaint Index Monitoring for @{formatDateTime(addDays(first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]'], 1), 'dd MMM yyyy')} ",
+                    "request/text": "<style>\n  table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 13px; }\n  th { background-color: #004b87; color: #ffffff; font-weight: bold; border: 1px solid #d3d3d3; padding: 8px 12px; text-align: left; }\n  td { border: 1px solid #d3d3d3; padding: 8px 12px; color: #333333; }\n  tr:nth-child(even) { background-color: #f9f9f9; }\n</style>\n\n<p>Hi team,</p>\n<p>Please find below the latest Complaint Index performance as of @{first(outputs('ReportDate')?['body/firstTableRows'])?['[ReportDate]']}.</p>\n\n@{body('HTML_Table_CI_Metrics')}\n\n<p>Below are the top 5 sub areas and categories based on weekly complaint volume spike for our monitoring.</p>\n\nSub Area:\n@{body('HTML_Table_Spike_Sub_Area')}\n\n<p></p>\n\nCategory:\n@{body('HTML_Table_Spike_Category')}\n\n<p>Regards,<br>\n<strong>Alex Tan</strong><br>\nMock Ops Team</p>"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+                    "connectionName": "shared_sendmail",
+                    "operationId": "SendEmailV3"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@variables('IsTestMode')",
+                  1
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "374924fc-7ca7-51f9-84cc-15a9a6a153e1"
+          },
+          "type": "If"
+        }
+      },
+      "outputs": {}
+    },
+    "connectionReferences": {
+      "shared_sharepointonline": {
+        "connectionName": "mock-sharepointonline-connection",
+        "source": "Embedded",
+        "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+        "tier": "NotSpecified",
+        "apiName": "sharepointonline",
+        "isProcessSimpleApiReferenceConversionAlreadyDone": false
+      },
+      "shared_powerbi": {
+        "connectionName": "mock-powerbi-connection",
+        "source": "Embedded",
+        "id": "/providers/Microsoft.PowerApps/apis/shared_powerbi",
+        "tier": "NotSpecified",
+        "apiName": "powerbi",
+        "isProcessSimpleApiReferenceConversionAlreadyDone": false
+      },
+      "shared_sendmail": {
+        "connectionName": "mock-sendmail-connection",
+        "source": "Embedded",
+        "id": "/providers/Microsoft.PowerApps/apis/shared_sendmail",
+        "tier": "NotSpecified",
+        "apiName": "sendmail",
+        "isProcessSimpleApiReferenceConversionAlreadyDone": false
+      }
+    },
+    "flowFailureAlertSubscribed": false,
+    "isManaged": false
+  }
+}
