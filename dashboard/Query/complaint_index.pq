@@ -1,7 +1,7 @@
 let
-    Source = SharePoint.Contents("https://tm365.sharepoint.com/sites/JourneyOperationLeadUnifiMobile"),
+    Source = SharePoint.Contents([Credential),
     Documents = Source{[Name="Documents"]}[Content],
-    DASHBOARD = Documents{[Name="AQIL"]}[Content],
+    DASHBOARD = Documents{[Name=[Me]]}[Content],
     DATA = Documents{[Name="DATA (PBI)"]}[Content],
     #"Sorted Files" = Table.Sort(DATA,{{"Date modified", Order.Descending}}),
     #"Filtered Files" = Table.FirstN(#"Sorted Files", 1),
