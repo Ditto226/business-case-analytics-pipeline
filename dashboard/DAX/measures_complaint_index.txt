@@ -1,0 +1,104 @@
+MEASURE 'Measure'[CI MTD] = 
+CALCULATE(
+    DIVIDE( [CI Total Cases MTD], [CI SupBase Volume], 0 ) * 1000
+)
+
+MEASURE 'Measure'[CI MTD Colour] = 
+VAR target = [CI Target]    
+VAR ActualValue = [CI MTD]  
+RETURN
+    SWITCH(
+        TRUE(),
+        ActualValue > target * 1.1, "#FF0000", // Red 
+        ActualValue > target,       "#EEEE00", // Yellow 
+        "#00B050"                              // Green 
+    )
+
+MEASURE 'Measure'[CI Normalized] = 
+VAR _LastDate = [MaxDate]
+VAR _CurrentDay = DAY ( _LastDate )
+VAR _DaysInMonth = DAY ( EOMONTH ( _LastDate, 0 ) )
+VAR _CasesMTD = [CI Total Cases MTD]
+VAR _ProjectedMonthCases = DIVIDE ( _CasesMTD, _CurrentDay, 0 ) * _DaysInMonth
+RETURN
+    DIVIDE ( _ProjectedMonthCases, [CI SupBase Volume], 0 ) * 1000
+
+MEASURE 'Measure'[CI Normalized Colour] = 
+VAR target = [CI Target]    
+VAR ActualValue = [CI Normalized]  
+RETURN
+    SWITCH(
+        TRUE(),
+        ActualValue > target * 1.1, "#FF0000", 
+        ActualValue > target,       "#EEEE00", 
+        "#00B050"                              
+    )
+
+MEASURE 'Measure'[CI SupBase Volume] = 
+VAR MaxDate = [MaxDate]
+VAR MaxMonthYear = CALCULATE(MAX('Date'[Month_Year]), 'Date'[Date] = MaxDate)
+RETURN
+CALCULATE (
+    MAX ( SupBase[Volume] ),
+    SupBase[Month_Year] = MaxMonthYear
+)
+
+MEASURE 'Measure'[CI Target] = 
+VAR CurrentType = SELECTEDVALUE('CI'[Type0])
+VAR ActiveRate = CALCULATE(MAX(TargetCI[Target]), TargetCI[Type0] = CurrentType)
+VAR DefaultRate = CALCULATE(MAX(TargetCI[Target]), TargetCI[Type0] = "Default")
+RETURN
+COALESCE(ActiveRate, DefaultRate)
+
+MEASURE 'Measure'[CI Target Volume Monthly] = 
+ROUNDUP(DIVIDE([CI Target] * [CI SupBase Volume], 1000, 0), 0)
+
+MEASURE 'Measure'[CI Target Volume Daily] = 
+VAR _DaysInMonth = DAY ( EOMONTH ( MAX ( 'Date'[Date] ), 0 ) )
+RETURN
+    DIVIDE([CI Target Volume Monthly], _DaysInMonth, 0)
+
+MEASURE 'Measure'[CI Total Cases] = 
+COUNT('CI'[CASE_ID])
+
+MEASURE 'Measure'[CI Total Cases Monthly] = 
+CALCULATE(
+    [CI Total Cases], 
+    FILTER(
+        ALL('Date'),
+        'Date'[Month] = MONTH(MAX('Date'[Date]))
+    )
+)
+
+MEASURE 'Measure'[CI Total Cases Last Week] = 
+CALCULATE(
+    [CI Total Cases],
+    DATEADD('Date'[Date], -7, DAY)
+)
+
+MEASURE 'Measure'[CI Total Cases MTD] = 
+CALCULATE(
+    [CI Total Cases],
+    DATESMTD('Date'[Date])
+)
+
+MEASURE 'Measure'[CI Delta Volume] = 
+[CI Total Cases] - [CI Total Cases Last Week]
+
+MEASURE 'Measure'[CI Delta% Volume] = 
+DIVIDE([CI Delta Volume], [CI Total Cases Last Week], BLANK())
+
+MEASURE 'Measure'[CI Volume To Meet Monthly] = 
+[CI Target Volume Monthly] - DIVIDE([CI MTD] * [CI SupBase Volume], 1000, 0)
+
+MEASURE 'Measure'[CI Legend] = 
+VAR SegmentCount = [Repeat Total Cases]
+VAR Legend = 
+    CALCULATE(
+        [Repeat Total Cases], 
+        'Date'[Date] >= MIN('Date'[Date]),
+        'Date'[Date] <= MAX('Date'[Date]),
+        ALLSELECTED()
+    )
+RETURN
+DIVIDE(SegmentCount, Legend)

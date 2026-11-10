@@ -1,0 +1,108 @@
+MEASURE 'Measure'[Repeat] = 
+CALCULATE(
+    [Repeat Total Cases], 
+    'Repeat'[Repeat Count] >= 1
+)
+
+MEASURE 'Measure'[Repeat%] = 
+DIVIDE([Repeat], [Repeat Total Cases])
+
+MEASURE 'Measure'[Repeat Total Cases] = 
+CALCULATE(
+    COUNTROWS('CI'),
+    'Repeat'
+)
+
+MEASURE 'Measure'[Repeat% Legend] = 
+VAR SegmentCount = [Repeat Total Cases]
+VAR Legend = 
+    CALCULATE(
+        [Repeat Total Cases], 
+        ALLSELECTED('Repeat'[Repeat Group])
+    )
+RETURN
+ROUNDDOWN(DIVIDE(SegmentCount, Legend), 2)
+
+MEASURE 'Measure'[Repeat Card] = 
+VAR _Count = [Repeat]
+VAR _Pct = [Repeat%]
+RETURN
+    IF(
+        NOT ISBLANK(_Count),
+        FORMAT(_Count, "#,##0") & " (" & FORMAT(_Pct, "0.0%") & ")"
+    )
+
+MEASURE 'Measure'[Repeat 1] = 
+CALCULATE(
+    [Repeat Total Cases], 
+    'Repeat'[Repeat Count] = 1
+)
+
+MEASURE 'Measure'[Repeat% 1] = 
+DIVIDE([Repeat 1], [Repeat Total Cases])
+
+MEASURE 'Measure'[Repeat 2+] = 
+CALCULATE(
+    [Repeat Total Cases], 
+    'Repeat'[Repeat Count] >= 2
+)
+
+MEASURE 'Measure'[Repeat% 2+] = 
+DIVIDE([Repeat 2+], [Repeat Total Cases])
+
+MEASURE 'Measure'[Repeat 2-4] = 
+CALCULATE(
+    [Repeat Total Cases], 
+    AND('Repeat'[Repeat Count] >= 2, 'Repeat'[Repeat Count] <= 4)
+)
+
+MEASURE 'Measure'[Repeat% 2-4] = 
+DIVIDE([Repeat 2-4], [Repeat Total Cases])
+
+MEASURE 'Measure'[Repeat 5+] = 
+CALCULATE(
+    [Repeat Total Cases], 
+    'Repeat'[Repeat Count] >= 5
+)
+
+MEASURE 'Measure'[Repeat% 5+] = 
+DIVIDE([Repeat 5+], [Repeat Total Cases])
+
+MEASURE 'Measure'[Repeat No] = 
+[Repeat Total Cases] - [Repeat]
+
+MEASURE 'Measure'[Repeat% No] = 
+DIVIDE([Repeat No], [Repeat Total Cases])
+
+MEASURE 'Measure'[Repeat No MTD] = 
+CALCULATE(
+    [Repeat No],
+    DATESMTD('Date'[Date])
+)
+
+MEASURE 'Measure'[Repeat% No MTD] = 
+DIVIDE([Repeat No MTD], [Repeat Total Cases MTD])
+
+MEASURE 'Measure'[Repeat 2+ No] = 
+[Repeat Total Cases] - [Repeat 2+]
+
+MEASURE 'Measure'[Repeat% 2+ No] = 
+DIVIDE([Repeat 2+ No], [Repeat Total Cases])
+
+MEASURE 'Measure'[Repeat 2+ No MTD] = 
+CALCULATE(
+    [Repeat 2+ No],
+    DATESMTD('Date'[Date])
+)
+
+MEASURE 'Measure'[Repeat% 2+ No MTD] = 
+DIVIDE([Repeat 2+ No MTD], [Repeat Total Cases MTD])
+
+MEASURE 'Measure'[Repeat Average] = 
+AVERAGE(Repeat[Repeat Count])
+
+MEASURE 'Measure'[Repeat Total Cases MTD] = 
+CALCULATE(
+    [Repeat Total Cases],
+    DATESMTD('Date'[Date])
+)

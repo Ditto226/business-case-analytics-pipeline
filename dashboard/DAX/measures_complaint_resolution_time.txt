@@ -1,0 +1,210 @@
+MEASURE 'Measure'[CRT NotMeet Closed] = 
+CALCULATE(
+    [CRT Total Cases], 
+    'CRT'[CRT_Status] = "Not Meet",
+    'CI'[CASE_STATUS] = "Closed"
+)
+
+MEASURE 'Measure'[CRT Meet] = 
+CALCULATE(
+    [CRT Total Cases], 
+    'CRT'[CRT_Status] = "Meet"
+)
+
+MEASURE 'Measure'[CRT Meet Colour Background] = 
+VAR target = [CRT Target]
+VAR ActualValue = [CRT Meet%] 
+RETURN
+    SWITCH(
+        TRUE(),
+        ActualValue < 0.90 * target, "#FF0000", 
+        ActualValue < target,        "#EEEE00", 
+        "#00B050"                              
+    )
+
+MEASURE 'Measure'[CRT Meet Colour Font] = 
+VAR target = [CRT Target]
+VAR ActualValue = [CRT Meet%]  
+RETURN
+    SWITCH(
+        TRUE(),
+        ActualValue < 0.90 * target, "#FFFFFF", 
+        ActualValue < target,        "#000000", 
+        "#FFFFFF"                              
+    )
+
+MEASURE 'Measure'[CRT Meet DueDate NT] = 
+VAR DueDate = 
+    CALCULATE(
+        MIN('CI'[Date_Creation]),
+        'CI'[Type0] = "Non-Technical",
+        'CRT'[Counter CRT] = "Today"
+    )
+RETURN
+IF(DueDate = 0, BLANK(), DAY(DueDate) - 0.5)
+
+MEASURE 'Measure'[CRT Meet DueDate T] = 
+VAR DueDate = 
+    CALCULATE(
+        MIN('CI'[Date_Creation]),
+        'CI'[Type0] = "Technical",
+        'CRT'[Counter CRT] = "Today"
+    )
+RETURN
+IF(DueDate = 0, BLANK(), DAY(DueDate) - 0.5)
+
+MEASURE 'Measure'[CRT Meet MTD] = 
+CALCULATE(
+    [CRT Meet],
+    DATESMTD('Date'[Date])
+)
+
+MEASURE 'Measure'[CRT Meet MTD Colour] = 
+VAR target = [CRT Target]
+VAR ActualValue = [CRT Meet% MTD]  
+RETURN
+    SWITCH(
+        TRUE(),
+        ActualValue < 0.90 * target, "#FF0000", 
+        ActualValue < target,        "#EEEE00", 
+        "#00B050"                              
+    )
+
+MEASURE 'Measure'[CRT Meet%] = 
+CALCULATE(
+    DIVIDE([CRT Meet], [CRT Total Cases], 0)
+)
+
+MEASURE 'Measure'[CRT Meet% Legend] = 
+VAR SegmentCount = [CRT Total Cases]
+VAR Legend = 
+    CALCULATE(
+        [CRT Total Cases], 
+        ALLSELECTED('CRT'[CRT_Status])
+    )
+RETURN
+ROUNDDOWN(DIVIDE(SegmentCount, Legend), 2)
+
+MEASURE 'Measure'[CRT Meet% MTD] = 
+DIVIDE([CRT Meet MTD], [CI Total Cases MTD])
+
+MEASURE 'Measure'[CRT MeetP] = 
+CALCULATE(
+    [CRT Total Cases], 
+    OR('CRT'[CRT_Status] = "Meet", 'CRT'[CRT_Status] = "Potential")
+)
+
+MEASURE 'Measure'[CRT MeetP Colour Background] = 
+VAR target = [CRT Target]
+VAR ActualValue = [CRT MeetP%] 
+RETURN
+IF(
+    [CRT Meet%] = [CRT MeetP%],
+    "#1A1A1A",
+    SWITCH(
+        TRUE(),
+        ActualValue < 0.90 * target, "#FF0000", 
+        ActualValue < target,        "#EEEE00", 
+        "#00B050"                              
+    )
+)
+
+MEASURE 'Measure'[CRT MeetP Colour Font] = 
+VAR target = [CRT Target]
+VAR ActualValue = [CRT MeetP%]  
+RETURN
+IF(
+    [CRT Meet%] = [CRT MeetP%],
+    "#1A1A1A",
+    SWITCH(
+        TRUE(),
+        ActualValue < 0.90 * target, "#FFFFFF", 
+        ActualValue < target,        "#000000", 
+        "#FFFFFF"                              
+    )
+)
+
+MEASURE 'Measure'[CRT MeetP MTD] = 
+CALCULATE(
+    [CRT MeetP],
+    DATESMTD('Date'[Date])
+)
+
+MEASURE 'Measure'[CRT MeetP MTD Colour] = 
+VAR target = [CRT Target]
+VAR ActualValue = [CRT MeetP% MTD]  
+RETURN
+    SWITCH(
+        TRUE(),
+        ActualValue < 0.90 * target, "#FF0000", 
+        ActualValue < target,        "#EEEE00", 
+        "#00B050"                              
+    )
+
+MEASURE 'Measure'[CRT MeetP%] = 
+CALCULATE(
+    DIVIDE([CRT MeetP], [CRT Total Cases], 0)
+)
+
+MEASURE 'Measure'[CRT MeetP% MTD] = 
+CALCULATE(
+    DIVIDE([CRT MeetP MTD], [CI Total Cases MTD], 0)
+)
+
+MEASURE 'Measure'[CRT NotMeet] = 
+CALCULATE(
+    [CRT Total Cases], 
+    'CRT'[CRT_Status] = "Not Meet"
+)
+
+MEASURE 'Measure'[CRT NotMeet Active] = 
+CALCULATE(
+    [CRT Total Cases], 
+    'CRT'[CRT_Status] = "Not Meet",
+    'CI'[CASE_STATUS] <> "Closed"
+)
+
+MEASURE 'Measure'[CRT Potential] = 
+CALCULATE(
+    [CRT Total Cases], 
+    'CRT'[CRT_Status] = "Potential"
+)
+
+MEASURE 'Measure'[CRT Target] = 
+VAR CurrentType = SELECTEDVALUE('CRT'[Type0])
+VAR CurrentPerf = SELECTEDVALUE('CRT'[Performance])
+VAR ActiveRate = CALCULATE(MAX(TargetCRT[Target]), TargetCRT[Type0] = CurrentType, TargetCRT[Performance] = CurrentPerf)
+VAR DefaultRate = CALCULATE(MAX(TargetCRT[Target]), TargetCRT[Type0] = "Default", TargetCRT[Performance] = CurrentPerf)
+RETURN
+    COALESCE(ActiveRate, DefaultRate)
+
+MEASURE 'Measure'[CRT Total Cases] = 
+CALCULATE(
+    COUNTROWS('CI'),
+    'CRT'
+)
+
+MEASURE 'Measure'[CRT Volume To Meet Daily] = 
+VAR result = 
+CALCULATE (
+    SUMX (
+        VALUES ( 'Date'[Date] ),
+        VAR DailyTarget = [CRT Total Cases] * [CRT Target]
+        VAR Gap = ROUNDUP ( DailyTarget - [CRT Meet], 0 )
+        RETURN
+            IF ( [CRT Potential] > 0, MAX ( 0, Gap ), 0 )
+    )
+)
+RETURN
+IF(result = 0, BLANK(), result)
+
+MEASURE 'Measure'[CRT Volume To Meet Monthly] = 
+VAR result = 
+CALCULATE (
+    VAR DailyTarget = [CRT Total Cases] * [CRT Target]
+    VAR Gap = ROUNDUP ( DailyTarget - [CRT Meet], 0 )
+    RETURN
+        IF ( [CRT Potential] > 0, MAX ( 0, Gap ), 0 )
+)
+RETURN
+IF(result = 0, BLANK(), result)
