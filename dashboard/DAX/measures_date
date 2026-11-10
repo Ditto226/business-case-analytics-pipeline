@@ -1,0 +1,24 @@
+
+Date = 
+VAR _MinDate = MIN('CI'[Date_Creation])
+VAR _MaxDate = MAX('CI'[Date_Creation])
+VAR CalendarTable = CALENDAR(_MinDate, _MaxDate)
+
+RETURN
+    ADDCOLUMNS(
+        CalendarTable,
+        "Year", YEAR([Date]),
+        "Quarter", "Q" & FORMAT([Date], "Q"),
+        "Month_Name", FORMAT([Date], "MMMM"),
+        "Month", MONTH([Date]),
+        "Month_Year", FORMAT([Date], "MMMM YYYY"),
+        "Day", DAY([Date]),
+        "Day_Name", FORMAT([Date], "DDDD"),
+        "Week_of_Year", FORMAT(WEEKNUM([Date], 2), "00"),
+        "Relative_Day", 
+            VAR DIFF = DATEDIFF([Date], _MaxDate, DAY) + 1
+            RETURN MOD(DIFF - 1, 7) + 1,
+        "Relative_Week",  
+            VAR DaysAgo = DATEDIFF([Date], _MaxDate, DAY)
+            RETURN IF(DaysAgo >= 0, "W" & (INT(DaysAgo / 7) + 1) & "-", BLANK())
+    )
