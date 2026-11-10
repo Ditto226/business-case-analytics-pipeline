@@ -1,4 +1,3 @@
-
 Date = 
 VAR _MinDate = MIN('CI'[Date_Creation])
 VAR _MaxDate = MAX('CI'[Date_Creation])
