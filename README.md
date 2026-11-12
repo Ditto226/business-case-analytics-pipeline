@@ -15,7 +15,7 @@ An end-to-end operational dashboard and automated pipeline solution designed to 
 ---
 
 ## 🎥 Interactive Dashboard Preview
-![Interactive Demo Preview](CEM_demo.gif)
+![Interactive Demo Preview](demo_dashboard.gif)
 
 ---
 
