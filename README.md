@@ -14,8 +14,10 @@ An end-to-end operational dashboard and automated pipeline solution designed to 
 
 ---
 
-## 🎥 Interactive Dashboard Preview
-![Interactive Demo Preview](https://raw.githubusercontent.com/Ditto226/business-case-analytics-pipeline/main/demo_dashboard.gif)
+## 🎥 Demo Preview
+![Dashboard Demo Preview](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/demo_dashboard.gif)
+![Automate Demo Preview](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/demo_automate.gif)
+> Note: The waiting delay (~10s) and dataset refresh action (~2m) have been trimmed for demo purposes.
 
 ---
 
@@ -39,9 +41,9 @@ This project integrates data automation with business intelligence to form a sea
 
 | Dashboard Page | Description | Sample Visual |
 | :--- | :--- | :--- |
-| **Complaint Index** | Measures overall complaint volume, current and normalized monthly complaint index, weekly/daily volume spike based on cases Type, SubArea and Category. | ![Complaint Index](https://raw.githubusercontent.com/Ditto226/business-case-analytics-pipeline/main/dashboard/samples/dashboard_complaint_index.png) |
-| **Resolution Time** | Tracks monthly/weekly/daily SLA adherence, volume of cases to close to meet SLA for daily and monthly, potential and failed cases, as well as active cases bottleneck departments. It is divided into 2 categories Complain Resolution Time (CRT) & Complain Resolution Time Tail-End (CRT-TE) | ![Resolution Time](https://raw.githubusercontent.com/Ditto226/business-case-analytics-pipeline/main/dashboard/samples/dashboard_complaint_resolution_time.png) |
-| **Repeated Issues** | Identifies recurring customer tickets and systemic root causes. The logic is by detecting customer account no. frequency within 90 days and within specific rule. The specific rule is divided into 2 categories, repeated by exact List of Value (LOV) or repeated just by Type. | ![Repeated Issues](https://raw.githubusercontent.com/Ditto226/business-case-analytics-pipeline/main/dashboard/samples/dashboard_repeated.png) |
+| **Complaint Index** | Measures overall complaint volume, current and normalized monthly complaint index, weekly/daily volume spike based on cases Type, Subarea and Category. | ![Complaint Index](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/dashboard/samples/dashboard_complaint_index.png) |
+| **Resolution Time** | Tracks monthly/weekly/daily SLA adherence, volume of cases to close to meet SLA for daily and monthly, potential and failed cases, as well as active cases bottleneck departments. It is divided into 2 categories Complain Resolution Time (CRT) & Complain Resolution Time Tail-End (CRT-TE) | ![Resolution Time](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/dashboard/samples/dashboard_complaint_resolution_time.png) |
+| **Repeated Issues** | Identifies recurring customer tickets and systemic root causes. The logic is by detecting customer account no. frequency within 90 days and within a specific rule. The specific rule is divided into 2 categories, repeated by Type, Subarea and Category (LOV) or repeated only by Type. | ![Repeated Issues](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/dashboard/samples/dashboard_repeated.png) |
 
 ---
 
