@@ -15,8 +15,8 @@ An end-to-end operational dashboard and automated pipeline solution designed to 
 ---
 
 ## 🎥 Demo Preview
-![Dashboard Demo Preview](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/demo_dashboard.gif)
-![Automate Demo Preview](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/demo_automate.gif)
+![Dashboard Demo Preview](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/dashboard/demo_dashboard.gif)
+![Automate Demo Preview](https://raw.githubusercontent.com/Ditto226/cem-analytics-automation-platform/main/automation/demo_automate.gif)
 > Note: The waiting delay (~10s) and dataset refresh action (~2m) have been trimmed for demo purposes.
 
 ---
